@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-
 <!-- hi if you hear this           e e e  e e e  e g c d e      f f f f f f e e ee  e d d e d g  e e e  e e e  e g c d e      f f f f f e e ee  g g f d c-->
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -13,79 +12,83 @@
 
 <body>
     <button id="play">Play.</button>
-    <input type="file" id="file-input" style="width: 0" >
+    <input type="file" id="file-input" style="width: 0">
     <script>
         // Define the Audio context and the necessary variables
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let t = 0;
 
-    const charToFreq = {
-        'a': 440.00, // A
-        'b': 493.88, // B
-        'c': 523.25, // C
-        'd': 587.33, // D
-        'e': 659.25, // E
-        'f': 698.46, // F
-        'g': 783.99, // G
-        'h': 880.00, // H
-        'i': 369.99, // i
-        'j': 349.23, // j
-        'k': 293.66, // k
-        'l': 329.63, // l
-        'm': 261.63, // m
-        'n': 295.96, // n
-        'o': 349.23, // o
-        'p': 329.63, // p
-        'q': 349.23, // q
-        'r': 386.31, // r
-        's': 430.54, // s
-        't': 370.00, // t
-        'u': 349.23, // u
-        'v': 311.13, // v
-        'w': 263.70, // w
-        'x': 233.08, // x
-        'y': 277.18, // y
-        'z': 220.00, // z
-        '0': 215.83, // 0
-        '1': 278.50, // 1
-        '2': 301.87, // 2
-        '3': 347.65, // 3
-        '4': 384.89, // 4
-        '5': 432.65, // 5
-        '6': 485.99, // 6
-        '7': 531.97, // 7
-        '8': 590.99, // 8
-        '9': 651.96, // 9
-        '[': 311.13, // [
-        ']': 311.13, // ]
-        '{': 311.13, // {
-        '}': 311.13, // }
-        '(': 311.13, // (
-        ')': 311.13, // )
-        ';': 311.13, // ;
-        ':': 311.13, // :
-        '"': 311.13, // "
-        "'": 311.13, // '
-    };
+        const charToFreq = {
+            'a': 440.00, // A
+            'b': 493.88, // B
+            'c': 523.25, // C
+            'd': 587.33, // D
+            'e': 659.25, // E
+            'f': 698.46, // F
+            'g': 783.99, // G
+            'h': 880.00, // H
+            'i': 369.99, // i
+            'j': 349.23, // j
+            'k': 293.66, // k
+            'l': 329.63, // l
+            'm': 261.63, // m
+            'n': 295.96, // n
+            'o': 349.23, // o
+            'p': 329.63, // p
+            'q': 349.23, // q
+            'r': 386.31, // r
+            's': 430.54, // s
+            't': 370.00, // t
+            'u': 349.23, // u
+            'v': 311.13, // v
+            'w': 263.70, // w
+            'x': 233.08, // x
+            'y': 277.18, // y
+            'z': 220.00, // z
+            '0': 215.83, // 0
+            '1': 278.50, // 1
+            '2': 301.87, // 2
+            '3': 347.65, // 3
+            '4': 384.89, // 4
+            '5': 432.65, // 5
+            '6': 485.99, // 6
+            '7': 531.97, // 7
+            '8': 590.99, // 8
+            '9': 651.96, // 9
+            '[': 311.13, // [
+            ']': 311.13, // ]
+            '{': 311.13, // {
+            '}': 311.13, // }
+            '(': 311.13, // (
+            ')': 311.13, // )
+            ';': 311.13, // ;
+            ':': 311.13, // :
+            '"': 311.13, // "
+            "'": 311.13, // '
+        };
 
         // Define the function to convert code to rhythm
-        function byteBeatBox(codeSnippet) {
+        function byteBeatBox(arrayBuffer) {
             const gainNode = audioCtx.createGain();
             gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Set the gain value to 0.1
             gainNode.connect(audioCtx.destination);
 
-            // Iterate through the code snippet characters
-            for (let i = 0; i < codeSnippet.length; i++) {
-                const char = codeSnippet[i].toLowerCase();
+            // Convert the ArrayBuffer to a Uint8Array
+            const uint8Array = new Uint8Array(arrayBuffer);
+
+            // Iterate through the Uint8Array characters
+            for (let i = 0; i < uint8Array.length; i++) {
+                const charCode = uint8Array[i];
+                const char = String.fromCharCode(charCode);
                 const freq = charToFreq[char] || 0; // Default to 0 for unmapped characters
 
                 // Create an oscillator for each character
                 const oscillator = audioCtx.createOscillator();
                 oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime + t);
-                        // Change oscillator type depending on the symbol section
-                if (char >= '0' && char <= '9') {
+                // Change oscillator type depending on the symbol section
+                if (charCode >= 48 && charCode <= 57) {
                     oscillator.type = 'triangle';
-                } else if (char === '[' || char === ']' || char === '{' || char === '}' || char === '(' || char === ')' || char === ';' || char === ':' || char === '"' || char === "'") {
+                } else if ((charCode >= 33 && charCode <= 47) || (charCode >= 58 && charCode <= 64) || (charCode >= 91 && charCode <= 96) || (charCode >= 123 && charCode <= 126)) {
                     oscillator.type = 'sawtooth';
                 } else {
                     oscillator.type = 'square';
@@ -105,10 +108,10 @@
             const file = fileInput.files[0];
             const reader = new FileReader();
             reader.onload = (event) => {
-                const codeSnippet = event.target.result;
-                byteBeatBox(codeSnippet);
+                const arrayBuffer = event.target.result;
+                byteBeatBox(arrayBuffer);
             };
-            reader.readAsText(file);
+            reader.readAsArrayBuffer(file);
         });
     </script>
     <style>
@@ -130,6 +133,7 @@
             cursor: pointer;
             border-radius: 50px;
         }
+
         input[type="file"]::-webkit-file-upload-button {
             z-index: 2;
             position: absolute;
@@ -148,11 +152,11 @@
             cursor: pointer;
             border-radius: 50px;
         }
+
         body {
             background-color: #1c1c1c;
             font-family: 'Courier New', monospace;
         }
-
     </style>
 </body>
 
