@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="ByteBeatBox">
+    <meta property="og:description" content="Converts any file into sound!">
+    <title>ByteBeatBox</title>
+</head>
+
+<body>
+    <input type="file" id="file-input" style="width: 0">
+    <button id="download-btn" style="display: none;">Download</button>
+    <script type='text/javascript' src='wavencoder.js'></script>
+    <script>
+        document.getElementById('file-input').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                let audioBuffer;
+                let fileData = e.target.result;
+
+                // Adjust fileData if byteLength is not even
+                if (fileData.byteLength % 2 !== 0) {
+                    fileData = fileData.slice(0, fileData.byteLength - 1);
+                }
+
+                const input = new Int16Array(fileData);
+                audioBuffer = context.createBuffer(1, input.length, 44100);
+
+                const output = audioBuffer.getChannelData(0);
+
+                for (let i = 0; i < input.length; i++) {
+                    output[i] = input[i] / 16384.0;
+                }
+
+                const source = context.createBufferSource();
+                source.buffer = audioBuffer;
+
+                const gainNode = context.createGain();
+                gainNode.gain.setValueAtTime(0.05, context.currentTime); // change the volume here
+
+                // Connect the nodes and play the sound
+                source.connect(gainNode);
+                gainNode.connect(context.destination);
+                source.start();
+
+                // Create and setup the download link
+                const downloadBtn = document.getElementById('download-btn');
+                downloadBtn.style.display = 'block'; // Show the download button
+                downloadBtn.addEventListener('click', () => {
+                        dataUrl = WavEncoder.encode(audioBuffer.getChannelData(0))
+                        const url = dataUrl;
+                        const a = document.createElement("a");
+                        document.body.appendChild(a);
+                        a.style = "display: none";
+                        a.href = url;
+                        a.download = 'audio.wav';
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                });
+
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+
+    </script>
+
+    <style>
+        button {
+            z-index: 3;
+            position: absolute;
+            top: 50%;
+            left: 50vw;
+            transform: translate(-50%, 80%);
+            background-color: #151616;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: medium;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 50px;
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            z-index: 2;
+            position: absolute;
+            top: 50%;
+            left: 50vw;
+            transform: translate(-50%, -50%);
+            background-color: #151616;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: medium;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 50px;
+        }
+
+        body {
+            background-color: #1c1c1c;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</body>
+
+</html>
