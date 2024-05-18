@@ -10,8 +10,7 @@
 </head>
 
 <body>
-    <input type="file" id="upload-btn" style="display: none;" />
-    <button id="upload-btn-styled" class="upld-btn">Upload File</button>
+    <input type="file" id="file-input" style="width: 0">
     <button id="download-btn" style="display: none;">Download</button>
     <script type='text/javascript' src='wavencoder.js'></script>
     <script>
@@ -69,11 +68,6 @@
             reader.readAsArrayBuffer(file);
         });
 
-            document.getElementById('upload-btn-styled').addEventListener('click', function () {
-                    document.getElementById('upload-btn').click();
-                });
-
-
     </script>
 
     <style>
@@ -96,12 +90,12 @@
             border-radius: 50px;
         }
 
-        .upld-btn {
+        input[type="file"]::-webkit-file-upload-button {
             z-index: 2;
             position: absolute;
-            bottom: 15vh;
+            top: 50%;
             left: 50vw;
-            transform: translate(-50%, -15vh);
+            transform: translate(-50%, -50%);
             background-color: #151616;
             border: none;
             color: white;

@@ -12,8 +12,7 @@
 
 <body>
     <button id="play">Play.</button>
-    <input type="file" id="upload-btn" style="display: none;" />
-    <button id="upload-btn-styled" class="upld-btn">Upload File</button>
+    <input type="file" id="file-input" style="width: 0">
     <script>
         // Define the Audio context and the necessary variables
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -67,11 +66,6 @@
             '"': 311.13, // "
             "'": 311.13, // '
         };
-
-            document.getElementById('upload-btn-styled').addEventListener('click', function () {
-                    document.getElementById('upload-btn').click();
-                });
-
 
         // Define the function to convert code to rhythm
         function byteBeatBox(arrayBuffer) {
@@ -140,12 +134,12 @@
             border-radius: 50px;
         }
 
-        .upld-btn {
+        input[type="file"]::-webkit-file-upload-button {
             z-index: 2;
             position: absolute;
-            bottom: 15vh;
+            top: 50%;
             left: 50vw;
-            transform: translate(-50%, -15vh);
+            transform: translate(-50%, -50%);
             background-color: #151616;
             border: none;
             color: white;
